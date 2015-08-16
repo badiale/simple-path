@@ -51,12 +51,13 @@ public class LogisticArch {
         if (this == o) return true;
         if (!(o instanceof LogisticArch)) return false;
         LogisticArch that = (LogisticArch) o;
-        return Objects.equal(id, that.id);
+        return Objects.equal(from, that.from)
+                && Objects.equal(to, that.to);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(from, to);
     }
 
     @Override

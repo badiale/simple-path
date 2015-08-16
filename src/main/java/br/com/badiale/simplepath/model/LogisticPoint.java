@@ -3,6 +3,7 @@ package br.com.badiale.simplepath.model;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
@@ -11,7 +12,6 @@ import org.springframework.data.neo4j.annotation.RelatedToVia;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -47,11 +47,8 @@ public class LogisticPoint {
         return name;
     }
 
-    /**
-     * @return Visão imutável dos arcos que são iniciados à partir deste ponto.
-     */
     public Set<LogisticArch> getSiblings() {
-        return Collections.unmodifiableSet(siblings);
+        return ImmutableSet.copyOf(siblings);
     }
 
     /**
@@ -87,6 +84,33 @@ public class LogisticPoint {
             }
         }
         return false;
+    }
+
+    /**
+     * Método que retorna todos os pontos que podem ser alcançadas à partir deste ponto.
+     *
+     * @return todos os pontos que podem ser alcançadas à partir deste ponto.
+     */
+    public Set<LogisticPoint> getReachablePoints() {
+        Set<LogisticPoint> result = Sets.newHashSet(this);
+        Set<LogisticPoint> toVisit = Sets.newHashSet();
+
+        for (LogisticArch arch : getSiblings()) {
+            toVisit.add(arch.getTo());
+        }
+        while (!toVisit.isEmpty()) {
+            Set<LogisticPoint> newVisits = Sets.newHashSet();
+            for (LogisticPoint to : toVisit) {
+                result.add(to);
+                for (LogisticArch arch : to.getSiblings()) {
+                    newVisits.add(arch.getTo());
+                }
+            }
+            toVisit.addAll(newVisits);
+            toVisit.removeAll(result);
+        }
+
+        return result;
     }
 
     @Override
