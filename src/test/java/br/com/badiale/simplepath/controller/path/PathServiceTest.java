@@ -53,12 +53,10 @@ public class PathServiceTest {
         assertThat(pathService.shorthestPath(start, end), IsEqual.equalTo(new Path(ImmutableList.of(middle, end), 6l)));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = PathNotFoundException.class)
     public void shouldNotFindShortestPathWhenNotConnected() {
         LogisticPoint start = new LogisticPointMock("A");
-        LogisticPoint middle = new LogisticPointMock("B");
         LogisticPoint end = new LogisticPointMock("C");
-        start.addSibling(middle, 1l);
         pathService.shorthestPath(start, end);
     }
 

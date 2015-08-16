@@ -20,7 +20,7 @@ public class PathService {
         Set<LogisticPoint> reachablePoints = Sets.newHashSet(from.getReachablePoints());
 
         if (!reachablePoints.contains(to)) {
-            throw new IllegalStateException("no path found");
+            throw new PathNotFoundException();
         }
 
         Map<LogisticPoint, Path> distances = Maps.newHashMap();
