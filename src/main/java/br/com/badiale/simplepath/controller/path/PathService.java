@@ -11,57 +11,60 @@ import java.util.Set;
 
 @Component
 public class PathService {
+    private static final Long INFINITY = Long.MAX_VALUE;
+
     /**
      * Implementação de caminho mais curto, utilizando algoritmo de Dijkstra.
      *
      * @see <a href="https://en.wikipedia.org/wiki/Dijkstra's_algorithm">Dijkstra's algorithm</a>
      */
-    // FIXME melhorar implementação. Foi feita uma tradução literal de pseudocode para java.
     // FIXME deveria retornar o caminho, além da distância.
-    public Long shorthestPath(LogisticPoint origem, LogisticPoint to) {
-        Set<LogisticPoint> V = origem.getReachablePoints();
+    public Long shorthestPath(LogisticPoint from, LogisticPoint to) {
+        Set<LogisticPoint> reachablePoints = from.getReachablePoints();
 
-        if (!V.contains(to)) {
+        if (!reachablePoints.contains(to)) {
             throw new IllegalStateException("no path found");
         }
 
-        Long INFINITY = Long.MAX_VALUE;
-        Map<LogisticPoint, Long> D = Maps.newHashMap();
-        LogisticPoint w;
-        Set<LogisticPoint> S = Sets.newHashSet(origem);
+        Map<LogisticPoint, Long> distances = Maps.newHashMap();
+        Set<LogisticPoint> visitedPoints = Sets.newHashSet();
 
-        for (LogisticPoint point : V) {
-            D.put(point, INFINITY);
-        }
-        D.put(origem, 0l);
-        for (LogisticArch arch : origem.getSiblings()) {
-            D.put(arch.getTo(), arch.getDistance());
-        }
-        while (!S.equals(V)) {
-            Long minDistance = INFINITY;
-            LogisticPoint sibling = null;
-            for (LogisticPoint arch : Sets.difference(V, S)) {
-                Long a = D.get(arch);
-                if (a < minDistance) {
-                    minDistance = a;
-                    sibling = arch;
-                }
-            }
-            if (sibling == null) {
-                continue;
-            }
-            w = sibling;
-            S.add(w);
-            for (LogisticArch arch : w.getSiblings()) {
-                Long a = D.get(arch.getTo());
-                Long b = D.get(w) + arch.getDistance();
-                D.put(arch.getTo(), Math.min(a, b));
+        initializeDistances(from, reachablePoints, distances);
+        while (!visitedPoints.equals(reachablePoints)) {
+            LogisticPoint currentVisiting = getClosestUnvisitedNode(reachablePoints, distances, visitedPoints);
+            visitedPoints.add(currentVisiting);
+            for (LogisticArch arch : currentVisiting.getSiblings()) {
+                distances.put(arch.getTo(), minimalDistanceToPointFrom(arch, distances));
             }
         }
-        Long result = D.get(to);
-        if (result.equals(INFINITY)) {
-            throw new IllegalStateException("no path found");
+
+        return distances.get(to);
+    }
+
+    private static void initializeDistances(LogisticPoint from, Set<LogisticPoint> reachablePoints, Map<LogisticPoint, Long> distances) {
+        for (LogisticPoint point : reachablePoints) {
+            distances.put(point, INFINITY);
+        }
+        distances.put(from, 0l);
+    }
+
+    private static LogisticPoint getClosestUnvisitedNode(Set<LogisticPoint> reachablePoints, Map<LogisticPoint, Long> distances, Set<LogisticPoint> visitedPoints) {
+        LogisticPoint result = null;
+        Long minDistance = INFINITY;
+        for (LogisticPoint arch : Sets.difference(reachablePoints, visitedPoints)) {
+            Long distance = distances.get(arch);
+            if (distance < minDistance) {
+                minDistance = distance;
+                result = arch;
+            }
         }
         return result;
+    }
+
+    private static long minimalDistanceToPointFrom(LogisticArch arch, Map<LogisticPoint, Long> distances) {
+        LogisticPoint from = arch.getFrom();
+        Long totalDistance = distances.get(arch.getTo());
+        Long distanceUsingArch = distances.get(from) + arch.getDistance();
+        return Math.min(totalDistance, distanceUsingArch);
     }
 }

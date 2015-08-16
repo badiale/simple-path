@@ -88,6 +88,8 @@ public class LogisticPoint {
 
     /**
      * Método que retorna todos os pontos que podem ser alcançadas à partir deste ponto.
+     * <p>
+     * Este ponto também é incluido no conjunto.
      *
      * @return todos os pontos que podem ser alcançadas à partir deste ponto.
      */
