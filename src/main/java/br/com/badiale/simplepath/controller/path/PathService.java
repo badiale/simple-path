@@ -14,6 +14,10 @@ public class PathService {
     /**
      * Implementação de caminho mais curto, utilizando algoritmo de Dijkstra.
      *
+     * @param from Ponto de origem
+     * @param to   Ponto de destino
+     * @return Um dos caminhos mais curto entre os pontos.
+     * @throws PathNotFoundException quando não existe um caminho entre os pontos fornedicos.
      * @see <a href="https://en.wikipedia.org/wiki/Dijkstra's_algorithm">Dijkstra's algorithm</a>
      */
     public Path shorthestPath(LogisticPoint from, LogisticPoint to) {
