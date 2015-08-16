@@ -11,27 +11,24 @@ import java.util.Set;
 
 @Component
 public class PathService {
-    private static final Long INFINITY = Long.MAX_VALUE;
-
     /**
      * Implementação de caminho mais curto, utilizando algoritmo de Dijkstra.
      *
      * @see <a href="https://en.wikipedia.org/wiki/Dijkstra's_algorithm">Dijkstra's algorithm</a>
      */
     public Path shorthestPath(LogisticPoint from, LogisticPoint to) {
-        Set<LogisticPoint> reachablePoints = from.getReachablePoints();
+        Set<LogisticPoint> reachablePoints = Sets.newHashSet(from.getReachablePoints());
 
         if (!reachablePoints.contains(to)) {
             throw new IllegalStateException("no path found");
         }
 
         Map<LogisticPoint, Path> distances = Maps.newHashMap();
-        Set<LogisticPoint> visitedPoints = Sets.newHashSet();
 
         initializeDistances(from, reachablePoints, distances);
-        while (!visitedPoints.equals(reachablePoints)) {
-            LogisticPoint currentVisiting = getClosestUnvisitedNode(reachablePoints, distances, visitedPoints);
-            visitedPoints.add(currentVisiting);
+        while (!reachablePoints.isEmpty()) {
+            LogisticPoint currentVisiting = getClosestUnvisitedNode(reachablePoints, distances);
+            reachablePoints.remove(currentVisiting);
             for (LogisticArch arch : currentVisiting.getSiblings()) {
                 distances.put(arch.getTo(), minimalPathToPointFrom(arch, distances));
             }
@@ -47,14 +44,14 @@ public class PathService {
         distances.put(from, Path.ZERO);
     }
 
-    private static LogisticPoint getClosestUnvisitedNode(Set<LogisticPoint> reachablePoints, Map<LogisticPoint, Path> distances, Set<LogisticPoint> visitedPoints) {
+    private static LogisticPoint getClosestUnvisitedNode(Set<LogisticPoint> reachablePoints, Map<LogisticPoint, Path> distances) {
         LogisticPoint result = null;
-        Path minDistance = Path.INFINITY;
-        for (LogisticPoint arch : Sets.difference(reachablePoints, visitedPoints)) {
-            Path path = distances.get(arch);
-            if (path.compareTo(minDistance) < 0) {
-                minDistance = path;
-                result = arch;
+        Path minPath = Path.INFINITY;
+        for (LogisticPoint point : reachablePoints) {
+            Path path = distances.get(point);
+            if (path.compareTo(minPath) < 0) {
+                minPath = path;
+                result = point;
             }
         }
         return result;
