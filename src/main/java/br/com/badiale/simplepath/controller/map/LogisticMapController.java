@@ -33,7 +33,7 @@ public class LogisticMapController {
     @ResponseBody
     public SerializedLogisticMap convertAndPersist(@RequestBody SerializedLogisticMap inputMap) {
         if (mapRepository.findByName(inputMap.getName()) != null) {
-            throw new MapAlreadyExistsException();
+            throw new MapAlreadyExistsException(inputMap.getName());
         }
 
         LogisticMap map = mapRepository.save(new LogisticMap(inputMap.getName()));
@@ -44,7 +44,7 @@ public class LogisticMapController {
             }
 
             if (arch.getFrom().equals(arch.getTo())) {
-                throw new ArchWithSameFromAndToException();
+                throw new ArchWithSameFromAndToException(arch.getFrom());
             }
 
             LogisticPoint from = getPoint(arch.getFrom());
@@ -54,7 +54,7 @@ public class LogisticMapController {
             map.addPoint(to);
 
             if (from.hasSibling(to)) {
-                throw new ArchAlreadyExistsInMapException();
+                throw new ArchAlreadyExistsInMapException(from.getName(), to.getName());
             }
 
             from.addSibling(to, arch.getDistance());

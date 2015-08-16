@@ -38,6 +38,8 @@ public class PathController {
      * @return Caminho mais curto entre o início e fim, e o valor gasto para percorrê-lo.
      * @throws PointNotFoundException caso os pontos fornecidos não sejam encontrados.
      * @throws PathNotFoundException  caso não exista um caminho entre os pontos.
+     * @throws AutonomyIsZeroOsLessException caso a autonomia seja menor ou igual à zero.
+     * @throws GasValueIsZeroOsLessException caso o valor da gasolina seja menor ou igual à zero.
      * @see br.com.badiale.simplepath.controller.path.PathService
      */
     @Transactional
@@ -49,6 +51,14 @@ public class PathController {
             @RequestParam(value = "autonomy", defaultValue = "10") Double autonomy,
             @RequestParam(value = "gasValue", defaultValue = "2.5") Double gasValue
     ) {
+        if (autonomy <= 0) {
+            throw new AutonomyIsZeroOsLessException();
+        }
+
+        if (gasValue <= 0) {
+            throw new GasValueIsZeroOsLessException();
+        }
+
         LogisticPoint from = pointRepository.findByName(fromName);
         if (from == null) {
             throw new PointNotFoundException(fromName);

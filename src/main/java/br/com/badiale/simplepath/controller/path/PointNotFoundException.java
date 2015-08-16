@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class PointNotFoundException extends RuntimeException {
     public PointNotFoundException(String pointName) {
-        super("point not found:" + pointName);
+        super("point not found: " + pointName);
     }
 }

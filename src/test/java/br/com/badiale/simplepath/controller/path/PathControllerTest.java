@@ -18,6 +18,16 @@ public class PathControllerTest extends AbstractIntegrationTest {
     @Resource
     private PathController pathController;
 
+    @Test(expected = AutonomyIsZeroOsLessException.class)
+    public void shouldFailWhenAutonomyIsZeroOrLess() {
+        pathController.getShortPath("A", "B", -10.0, 10.0);
+    }
+
+    @Test(expected = GasValueIsZeroOsLessException.class)
+    public void shouldFailWhenGasValueIsZeroOrLess() {
+        pathController.getShortPath("A", "B", 10.0, -10.0);
+    }
+
     @Test(expected = PointNotFoundException.class)
     public void shouldFailWhenFromNotExists() {
         pointRepository.save(new LogisticPoint("B"));
