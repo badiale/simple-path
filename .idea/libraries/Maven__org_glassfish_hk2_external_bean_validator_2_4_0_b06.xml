@@ -8,6 +8,8 @@
     </JAVADOC>
     <SOURCES>
       <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/hk2/external/bean-validator/2.4.0-b06/bean-validator-2.4.0-b06-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/hk2/external/bean-validator/2.4.0-b06/bean-validator-2.4.0-b06-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/hk2/external/bean-validator/2.4.0-b06/bean-validator-2.4.0-b06-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

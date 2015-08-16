@@ -1,16 +1,14 @@
 package br.com.badiale.simplepath;
 
-import org.junit.Test;
+import br.com.badiale.simplepath.controller.ServicesTestSuite;
+import br.com.badiale.simplepath.repository.RepositoryTestSuite;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.junit.runners.Suite;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SimplePathApplication.class)
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        RepositoryTestSuite.class,
+        ServicesTestSuite.class
+})
 public class SimplePathApplicationTests {
-
-	@Test
-	public void contextLoads() {
-	}
-
 }
