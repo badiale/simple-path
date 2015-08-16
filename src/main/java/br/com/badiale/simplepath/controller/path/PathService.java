@@ -18,15 +18,14 @@ public class PathService {
      *
      * @see <a href="https://en.wikipedia.org/wiki/Dijkstra's_algorithm">Dijkstra's algorithm</a>
      */
-    // FIXME deveria retornar o caminho, além da distância.
-    public Long shorthestPath(LogisticPoint from, LogisticPoint to) {
+    public Path shorthestPath(LogisticPoint from, LogisticPoint to) {
         Set<LogisticPoint> reachablePoints = from.getReachablePoints();
 
         if (!reachablePoints.contains(to)) {
             throw new IllegalStateException("no path found");
         }
 
-        Map<LogisticPoint, Long> distances = Maps.newHashMap();
+        Map<LogisticPoint, Path> distances = Maps.newHashMap();
         Set<LogisticPoint> visitedPoints = Sets.newHashSet();
 
         initializeDistances(from, reachablePoints, distances);
@@ -34,37 +33,40 @@ public class PathService {
             LogisticPoint currentVisiting = getClosestUnvisitedNode(reachablePoints, distances, visitedPoints);
             visitedPoints.add(currentVisiting);
             for (LogisticArch arch : currentVisiting.getSiblings()) {
-                distances.put(arch.getTo(), minimalDistanceToPointFrom(arch, distances));
+                distances.put(arch.getTo(), minimalPathToPointFrom(arch, distances));
             }
         }
 
         return distances.get(to);
     }
 
-    private static void initializeDistances(LogisticPoint from, Set<LogisticPoint> reachablePoints, Map<LogisticPoint, Long> distances) {
+    private static void initializeDistances(LogisticPoint from, Set<LogisticPoint> reachablePoints, Map<LogisticPoint, Path> distances) {
         for (LogisticPoint point : reachablePoints) {
-            distances.put(point, INFINITY);
+            distances.put(point, Path.INFINITY);
         }
-        distances.put(from, 0l);
+        distances.put(from, Path.ZERO);
     }
 
-    private static LogisticPoint getClosestUnvisitedNode(Set<LogisticPoint> reachablePoints, Map<LogisticPoint, Long> distances, Set<LogisticPoint> visitedPoints) {
+    private static LogisticPoint getClosestUnvisitedNode(Set<LogisticPoint> reachablePoints, Map<LogisticPoint, Path> distances, Set<LogisticPoint> visitedPoints) {
         LogisticPoint result = null;
-        Long minDistance = INFINITY;
+        Path minDistance = Path.INFINITY;
         for (LogisticPoint arch : Sets.difference(reachablePoints, visitedPoints)) {
-            Long distance = distances.get(arch);
-            if (distance < minDistance) {
-                minDistance = distance;
+            Path path = distances.get(arch);
+            if (path.compareTo(minDistance) < 0) {
+                minDistance = path;
                 result = arch;
             }
         }
         return result;
     }
 
-    private static long minimalDistanceToPointFrom(LogisticArch arch, Map<LogisticPoint, Long> distances) {
+    private static Path minimalPathToPointFrom(LogisticArch arch, Map<LogisticPoint, Path> distances) {
         LogisticPoint from = arch.getFrom();
-        Long totalDistance = distances.get(arch.getTo());
-        Long distanceUsingArch = distances.get(from) + arch.getDistance();
-        return Math.min(totalDistance, distanceUsingArch);
+        Path totalDistance = distances.get(arch.getTo());
+        Path distanceUsingArch = distances.get(from).addArch(arch);
+        if (totalDistance.compareTo(distanceUsingArch) < 0) {
+            return totalDistance;
+        }
+        return distanceUsingArch;
     }
 }

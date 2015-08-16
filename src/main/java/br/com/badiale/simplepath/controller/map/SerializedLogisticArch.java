@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Versão serializável de um arco.
  * <p>
@@ -12,6 +14,7 @@ import com.google.common.base.Objects;
  *
  * @see LogisticMapController
  */
+@Immutable
 public class SerializedLogisticArch {
     private final String from;
     private final String to;

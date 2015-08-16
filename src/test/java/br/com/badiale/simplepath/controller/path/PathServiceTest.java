@@ -1,6 +1,7 @@
 package br.com.badiale.simplepath.controller.path;
 
 import br.com.badiale.simplepath.model.LogisticPoint;
+import com.google.common.collect.ImmutableList;
 import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class PathServiceTest {
     @Test
     public void shouldFindShortestPathBetweenTheSinglePoint() {
         LogisticPoint start = new LogisticPointMock("A");
-        assertThat(pathService.shorthestPath(start, start), IsEqual.equalTo(0l));
+        assertThat(pathService.shorthestPath(start, start), IsEqual.equalTo(Path.ZERO));
     }
 
     @Test
@@ -26,7 +27,7 @@ public class PathServiceTest {
         LogisticPoint start = new LogisticPointMock("A");
         LogisticPoint end = new LogisticPointMock("B");
         start.addSibling(end, 10l);
-        assertThat(pathService.shorthestPath(start, end), IsEqual.equalTo(10l));
+        assertThat(pathService.shorthestPath(start, end), IsEqual.equalTo(new Path(ImmutableList.of(end), 10l)));
     }
 
     @Test
@@ -37,7 +38,7 @@ public class PathServiceTest {
         start.addSibling(end, 10l);
         start.addSibling(middle, 2l);
         middle.addSibling(end, 4l);
-        assertThat(pathService.shorthestPath(start, end), IsEqual.equalTo(6l));
+        assertThat(pathService.shorthestPath(start, end), IsEqual.equalTo(new Path(ImmutableList.of(middle, end), 6l)));
     }
 
     @Test
@@ -49,7 +50,7 @@ public class PathServiceTest {
         start.addSibling(middle, 2l);
         middle.addSibling(end, 4l);
         middle.addSibling(start, 1l);
-        assertThat(pathService.shorthestPath(start, end), IsEqual.equalTo(6l));
+        assertThat(pathService.shorthestPath(start, end), IsEqual.equalTo(new Path(ImmutableList.of(middle, end), 6l)));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -58,7 +59,7 @@ public class PathServiceTest {
         LogisticPoint middle = new LogisticPointMock("B");
         LogisticPoint end = new LogisticPointMock("C");
         start.addSibling(middle, 1l);
-        assertThat(pathService.shorthestPath(start, end), IsEqual.equalTo(6l));
+        pathService.shorthestPath(start, end);
     }
 
     @Test
@@ -76,11 +77,10 @@ public class PathServiceTest {
         point4.addSibling(point3, 2l);
         point4.addSibling(point5, 6l);
 
-
-        assertThat(pathService.shorthestPath(point1, point2), IsEqual.equalTo(1l));
-        assertThat(pathService.shorthestPath(point1, point3), IsEqual.equalTo(5l));
-        assertThat(pathService.shorthestPath(point1, point4), IsEqual.equalTo(3l));
-        assertThat(pathService.shorthestPath(point1, point5), IsEqual.equalTo(6l));
+        assertThat(pathService.shorthestPath(point1, point2), IsEqual.equalTo(new Path(ImmutableList.of(point2), 1l)));
+        assertThat(pathService.shorthestPath(point1, point3), IsEqual.equalTo(new Path(ImmutableList.of(point4, point3), 5l)));
+        assertThat(pathService.shorthestPath(point1, point4), IsEqual.equalTo(new Path(ImmutableList.of(point4), 3l)));
+        assertThat(pathService.shorthestPath(point1, point5), IsEqual.equalTo(new Path(ImmutableList.of(point4, point3, point5), 6l)));
     }
 
     @Test
@@ -97,7 +97,6 @@ public class PathServiceTest {
         pointB.addSibling(pointE, 50l);
         pointD.addSibling(pointE, 30l);
 
-
-        assertThat(pathService.shorthestPath(pointA, pointD), IsEqual.equalTo(25l));
+        assertThat(pathService.shorthestPath(pointA, pointD), IsEqual.equalTo(new Path(ImmutableList.of(pointB, pointD), 25l)));
     }
 }

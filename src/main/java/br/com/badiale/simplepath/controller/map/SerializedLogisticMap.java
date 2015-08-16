@@ -6,6 +6,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Set;
 
 /**
@@ -15,6 +16,7 @@ import java.util.Set;
  *
  * @see LogisticMapController
  */
+@Immutable
 public class SerializedLogisticMap {
     private final String name;
     private final Set<SerializedLogisticArch> arches;
